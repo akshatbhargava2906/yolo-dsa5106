@@ -1,13 +1,3 @@
-"""
-Evaluation pipeline for YOLO-World (Option A — pretrained weights).
-Computes: AP, AP50, AP75, APr (rare), APs/APm/APl, FPS
-against COCO val2017 (or the mini subset from download_data.py).
-
-Usage:
-    python evaluate.py --ann data/coco_mini500.json --img-dir data/val2017
-    python evaluate.py --ann data/annotations/instances_val2017.json --img-dir data/val2017 --model yolov8m-worldv2.pt
-"""
-
 import argparse
 import json
 import time
@@ -58,10 +48,6 @@ def load_model(weights: str) -> YOLOWorld:
 def run_inference(model: YOLOWorld, img_dir: Path, image_infos: list,
                   conf_thresh: float = 0.001, iou_thresh: float = 0.7
                   ) -> tuple[list[dict], float]:
-    """
-    Run inference on all images and return (predictions_list, fps).
-    predictions_list: COCO-format [{"image_id", "category_id", "bbox", "score"}, ...]
-    """
     predictions = []
     total_time = 0.0
     missing = 0
@@ -105,7 +91,6 @@ def run_inference(model: YOLOWorld, img_dir: Path, image_infos: list,
 
 def run_coco_eval(coco_gt: COCO, predictions: list[dict],
                   iou_type: str = "bbox") -> dict:
-    """Run COCOeval and return a results dict."""
     if not predictions:
         print("[warn] No predictions — returning zero metrics")
         return {}
@@ -132,11 +117,6 @@ def run_coco_eval(coco_gt: COCO, predictions: list[dict],
 
 def compute_APr(coco_gt: COCO, predictions: list[dict],
                 rare_max_instances: int = 10) -> float:
-    """
-    Compute APr: AP restricted to 'rare' categories.
-    A category is 'rare' if it has fewer than `rare_max_instances` annotations
-    in the evaluation set (mirrors the LVIS definition applied to COCO).
-    """
     cat_counts = {}
     for ann in coco_gt.dataset["annotations"]:
         cat_counts[ann["category_id"]] = cat_counts.get(ann["category_id"], 0) + 1
@@ -172,10 +152,6 @@ def compute_APr(coco_gt: COCO, predictions: list[dict],
 
 def compute_fixed_ap(coco_gt: COCO, predictions: list[dict],
                      max_dets: int = 300) -> float:
-    """
-    Fixed AP: same as AP but with max detections per image set to 300
-    (COCO default is 100; LVIS uses 300 to avoid penalizing large-vocabulary detectors).
-    """
     if not predictions:
         return 0.0
     coco_dt = coco_gt.loadRes(predictions)
