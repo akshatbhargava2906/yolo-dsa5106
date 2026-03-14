@@ -1,0 +1,21 @@
+# Core model
+ultralytics>=8.2.0
+
+# COCO evaluation
+pycocotools>=2.0.7
+
+# LVIS evaluation
+lvis>=0.5.3
+
+# Data handling & utilities
+numpy>=1.24.0
+Pillow>=10.0.0
+tqdm>=4.66.0
+requests>=2.31.0
+
+# Visualization (optional but useful)
+matplotlib>=3.7.0
+seaborn>=0.13.0
+
+# Experiment tracking
+pandas>=2.0.0
